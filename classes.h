@@ -9,12 +9,12 @@
 class classes{
 private:
     std::vector<int> curr_board;
-    std::vector<int>* parent;           //points to parent
-    std::vector<std::vector<int>*> children;    //vector consisting of pointers to children (no more than 4)
+    classes* parent;           //points to parent
+    std::vector<classes*> children;    //vector consisting of pointers to children (no more than 4)
     int depth;
     int weight;     //for f(n)
 public:
-    classes(std::vector<int> inp, std::vector<int>* par, int dep, int wei) {
+    classes(std::vector<int> inp, classes* par, int dep, int wei) {
         curr_board = inp;
         parent = par;
         depth = dep;
@@ -25,15 +25,27 @@ public:
         return curr_board;
     }
 
-    std::vector<int>* get_parent_pointer(){
+    classes* get_parent_pointer(){
         return parent;
     }
 
-    std::vector<std::vector<int>*> get_children() {
+    void set_parent_ptr(classes* parPtr){
+        parent= parPtr;
+    }
+
+    std::vector<classes*> get_children() {
         return children;
     }
 
-    void add_child(std::vector<int>* inp){
+    classes* get_child(int i){
+        return children.at(i);
+    }
+
+    int get_childSize(){
+        return children.size();
+    }
+
+    void add_child(classes* inp){
         children.push_back(inp);
     }
 
