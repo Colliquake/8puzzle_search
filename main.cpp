@@ -14,8 +14,8 @@ int main() {
         select_alg(default_puzzle(diff_inp));
     }
     if(x== 2){
-        std::string str1, str2, str3;
-        std::cout<< "You are entering your own puzzle. Please only enter solvable puzzles. Represent the blank with a 0."<< std::endl;
+        std::string str1, str2, str3;           //TODO: create and implement more str (for when puzzle is larger than 3x3
+        std::cout<< "You are entering your own puzzle. Please only enter solvable puzzles. Represent the blank with a '0'."<< std::endl;
         std::cout<< "Enter the first row as one whole number (i.e. don't separate the numbers):"<< std::endl;
         std::cin>> str1;
         std::cout<< "Enter the second row as one whole number:"<< std::endl;
