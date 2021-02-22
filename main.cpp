@@ -2,6 +2,17 @@
 #include "custom_puzzles.h"
 #include "search.h"
 
+void select_alg(std::vector<int> v){
+    int inp;
+    std::cout<< "Select the algorithm you would like to perform (1-3): \n1. Uniform Cost Search\n2. A* with Misplaced Tile heuristic\n3. A* with Manhattan Distance heuristic"<< std::endl;
+    std::cin>> inp;
+//    if(inp== 1){ uniform_cost_search( , );};
+//    if(inp== 2){ misplaced_tiles( , );};
+    if(inp== 3){
+        classes* ret_MH= AStarMH(v, 3);
+    }
+}
+
 int main() {
     int P_WIDTH= 3;         //represents "width" of puzzle (e.g. for 3x3, P_WIDTH= 3; for 4x4, P_WIDTH= 4; etc.)
     int x;
