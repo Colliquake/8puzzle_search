@@ -717,67 +717,88 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
     }
 }
 
-classes* AStarMH(std::vector<int> start, int size){     //TODO: let this program solve for different sizes ("size" represents size of puzzle)
+classes* AStarMH(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, calc_MH(start, size));
-    int totalNodes= 0;          //TODO
-    int maxNodes= 0;            //TODO
+    int totalNodes= 0;
+    int maxNodes= 0;
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //priority queue is a vector consisting of classes pointers
     pq.push(curr);
+    maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
         curr= pq.top();
         pq.pop();
         if(calc_MH(curr->get_board(), size)== 0){       //we have found solution
-            std::cout<< "Done with A* Manhattan heuristic!"<< std::endl;        //TODO: work on description
+            std::cout<< "Done with A* Manhattan heuristic!"<< std::endl<< std::endl;
+            nodesExpanded= totalNodes;
+            maxSize= maxNodes;
             return curr;
+        }
+        if(pq.size()> maxNodes){
+            maxNodes= pq.size();
         }
         MHExpand(curr, size, list);       //children pointers have been added
         for(int i= 0; i< curr->get_childSize(); i++) {
             pq.push(curr->get_child(i));
+            totalNodes++;
         }
     }
     return nullptr;
 }
 
-classes* AStarMis(std::vector<int> start, int size){
+classes* AStarMis(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, calc_Mis(start, size));
-    int totalNodes= 0;          //TODO
-    int maxNodes= 0;            //TODO
+    int totalNodes= 0;
+    int maxNodes= 0;
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;
     pq.push(curr);
+    maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
         curr= pq.top();
         pq.pop();
         if(calc_Mis(curr->get_board(), size)== 0){
-            std::cout<< "Done with A* Misplaced Tile heuristic!"<< std::endl;
+            std::cout<< "Done with A* Misplaced Tile heuristic!"<< std::endl<< std::endl;
+            nodesExpanded= totalNodes;
+            maxSize= maxNodes;
             return curr;
+        }
+        if(pq.size()> maxNodes){
+            maxNodes= pq.size();
         }
         MisTileExpand(curr, size, list);
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
+            totalNodes++;
         }
     }
     return nullptr;
 }
 
-classes* Uniform_Cost(std::vector<int> start, int size){
+classes* Uniform_Cost(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, 0);
-    int totalNodes= 0;          //TODO
-    int maxNodes= 0;            //TODO
+    int totalNodes= 0;
+    int maxNodes= 0;
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;
     pq.push(curr);
+    maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
         curr= pq.top();
         pq.pop();
         if(calc_Mis(curr->get_board(), size)== 0){          //only uses Misplaced Tiles as a way to check if (board== solution)
-            std::cout<< "Done with Uniform Cost Search!"<< std::endl;
+            std::cout<< "Done with Uniform Cost Search!"<< std::endl<< std::endl;
+            nodesExpanded= totalNodes;
+            maxSize= maxNodes;
             return curr;
+        }
+        if(pq.size()> maxNodes){
+            maxNodes= pq.size();
         }
         UCExpand(curr, size, list);
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
+            totalNodes++;
         }
     }
     return nullptr;
