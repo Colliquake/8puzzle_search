@@ -6,10 +6,35 @@ void select_alg(std::vector<int> v){
     int inp;
     std::cout<< "Select the algorithm you would like to perform (1-3): \n1. Uniform Cost Search\n2. A* with Misplaced Tile heuristic\n3. A* with Manhattan Distance heuristic"<< std::endl;
     std::cin>> inp;
-//    if(inp== 1){ uniform_cost_search( , );};
-//    if(inp== 2){ misplaced_tiles( , );};
+    if(inp== 1){
+        clock_t start, end;
+        start= clock();
+        classes* ret_UC= Uniform_Cost(v, 3);
+        end= clock();
+        double tot_time= double(end- start)/ double(CLOCKS_PER_SEC);
+        std::cout<< "Depth: "<< ret_UC->get_depth()<< std::endl;
+        std::cout<< "Total execution time is "<< std::fixed<< std::setprecision(6)<< tot_time;
+        std::cout<< " seconds.";
+    }
+    if(inp== 2){
+        clock_t start, end;
+        start= clock();
+        classes* ret_MT= AStarMis(v, 3);
+        end= clock();
+        double tot_time= double(end- start)/ double(CLOCKS_PER_SEC);
+        std::cout<< "Depth: "<< ret_MT->get_depth()<< std::endl;
+        std::cout<< "Total execution time is "<< std::fixed<< std::setprecision(6)<< tot_time;
+        std::cout<< " seconds.";
+    }
     if(inp== 3){
+        clock_t start, end;                             //measuring execution time taken from https://www.geeksforgeeks.org/measure-execution-time-with-high-precision-in-c-c/
+        start= clock();
         classes* ret_MH= AStarMH(v, 3);
+        end= clock();
+        double tot_time= double(end- start)/ double(CLOCKS_PER_SEC);
+        std::cout<< "Depth: "<< ret_MH->get_depth()<< std::endl;
+        std::cout<< "Total execution time is "<< std::fixed<< std::setprecision(6)<< tot_time;
+        std::cout<< " seconds.";
     }
 }
 
