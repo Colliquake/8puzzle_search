@@ -7,8 +7,8 @@
 
 #include <string>
 
-std::vector<int> custom_puzzle(std::string str, int width){
-    int area= width*width;
+std::vector<int> custom_puzzle(std::string str, int length){
+    int area= length* length;
     std::vector<int> v(area, 0);
     for(int i= 0; i< area; i++){
         v[i]= ((int)str[i] - 48);      //ascii to int
