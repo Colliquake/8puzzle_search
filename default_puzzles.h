@@ -8,7 +8,7 @@
 #include <vector>
 #include <iostream>
 
-std::vector<int> default_puzzle(int inp){         //input is between 1-8
+std::vector<int> default_puzzle(int inp){         //input is between 1-8, returns a puzzle in the form of a vector
     std::vector<int> v(9, 0);
     switch(inp){
         case 1:

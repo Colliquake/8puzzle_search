@@ -11,7 +11,7 @@
 #include <ctime>
 #include <bits/stdc++.h>
 
-struct compare{
+struct compare{         //orders elements in priority queue by comparing f(n)= (depth)+ weight of each element
     bool operator()(classes* a, classes* b){      //learned from 'Galik' on https://stackoverflow.com/questions/48840649/constructing-a-priority-queue-of-vectors
         return ((a->get_depth()+ a->get_weight()) > (b->get_depth()+ b->get_weight()));
     }
@@ -25,7 +25,7 @@ bool seenBefore(std::vector<int> list, std::vector<int> vectorToCheck){     //fa
         current= vectorToCheck.at(i)* primes.at(i);         //creates a uniqueID for each puzzle layout
         sum+= current;
     }
-    int flag= 1;            //0 if combination is not new
+    int flag= 1;            //boolean flag, flag= 0 if combination is not new
     for(int i= 0; i< list.size(); i++){
         if(list.at(i)== sum){
             flag= 0;
@@ -38,7 +38,7 @@ bool seenBefore(std::vector<int> list, std::vector<int> vectorToCheck){     //fa
     return true;
 }
 
-int findBlank(classes* inp, int size){
+int findBlank(classes* inp, int size){          //traverse through board state and find where the blank is
     int ret;
     std::vector<int> vec= inp->get_board();
     for(int i= 0; i< vec.size(); i++){
@@ -55,7 +55,7 @@ int findBlank(classes* inp, int size){
 //    }
 //}
 
-std::vector<int> makeVecOfSizeN(int n){
+std::vector<int> makeVecOfSizeN(int n){         //for creating solution puzzles of size n
     int n2= n* n;
     std::vector<int> ret;
     for(int i= 0; i< n2- 1; i++){
@@ -65,7 +65,7 @@ std::vector<int> makeVecOfSizeN(int n){
     return ret;
 }
 
-int calc_Mis(std::vector<int> inp, int n){
+int calc_Mis(std::vector<int> inp, int n){          //calculating Misplaced-Tile heuristic
     std::vector<int> solution= makeVecOfSizeN(n);
     int sum= 0;
     for(int i= 0; i< inp.size(); i++){
@@ -76,21 +76,14 @@ int calc_Mis(std::vector<int> inp, int n){
     return sum;
 }
 
-void UCExpand(classes* inp, int size, std::vector<int> list){
-//expand for all possible moves
+void UCExpand(classes* inp, int size, std::vector<int> list){               //for expanding all valid moves from current board for Uniform Cost Search
     int global_square= size* size;        //global_square= (length)^2
     int b= findBlank(inp, size);
-    std::vector<int> curr= inp->get_board();
-    if(!seenBefore(list, curr)) {
+    std::vector<int> curr= inp->get_board();            //copying board state into a vector
+    if(!seenBefore(list, curr)) {               //checks if we have seen current board state before
         if (b < size) {     //blank is in top row
             if (b == 0) {          //check if blank is in top-left
                 //valids are right, down
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(rightPoint->at(0), rightPoint->at(1));
-//            std::swap(downPoint->at(0), downPoint->at(global_size));
                 std::vector<int> r = curr;
                 std::swap(r.at(0), r.at(1));
                 std::vector<int> d = curr;
@@ -101,12 +94,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(dC);
             } else if (b == size - 1) {    //check if blank is top-right
                 //valids are left, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(global_size- 1), leftPoint->at(global_size- 2));
-//            std::swap(downPoint->at(global_size- 1), downPoint->at(global_size- 1+ global_size));
                 std::vector<int> l = curr;
                 std::swap(l.at(size - 1), l.at(size - 2));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, 0);
@@ -116,17 +103,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(lC);
                 inp->add_child(dC);
             } else {
-                //valids are left, right, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-
                 std::vector<int> l = curr;
                 std::swap(l.at(b), l.at(b - 1));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, 0);
@@ -140,16 +116,9 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(rC);
                 inp->add_child(dC);
             }
-        } else if ((b + size) >= global_square) {      //blank is bottom row
+        } else if ((b + size) >= global_square) {      //blank is in bottom row
             if (b == (global_square - size)) {       //blank is bottom-left
                 //valids are up, right
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -160,13 +129,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(rC);
             } else if (b == (global_square - 1)) {        //blank is bottom-right
                 //valids are up, left
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -177,16 +139,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(lC);
             } else {
                 //valids are left, right, up
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -202,16 +154,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
             }
         } else if ((b % size) == 0) {      //blank is in first column
             //valids are up, down, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -226,16 +168,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
             inp->add_child(rC);
         } else if (((b + 1) % size) == 0) {       //blank is in last column
             //valids are up, down, left
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -250,19 +182,6 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
             inp->add_child(lC);
         } else {       //blanks is not on edge
             //valids are up, down, left, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, 0);
@@ -283,8 +202,7 @@ void UCExpand(classes* inp, int size, std::vector<int> list){
     }
 }
 
-void MisTileExpand(classes* inp, int size, std::vector<int> list){
-//expand for all possible moves
+void MisTileExpand(classes* inp, int size, std::vector<int> list){              //for expanding all valid moves from current board state for A* Search with Misplaced Tile heuristic
     int global_square= size* size;        //global_square= (length)^2
     int b= findBlank(inp, size);
     std::vector<int> curr= inp->get_board();
@@ -292,12 +210,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
         if (b < size) {     //blank is in top row
             if (b == 0) {          //check if blank is in top-left
                 //valids are right, down
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(rightPoint->at(0), rightPoint->at(1));
-//            std::swap(downPoint->at(0), downPoint->at(global_size));
                 std::vector<int> r = curr;
                 std::swap(r.at(0), r.at(1));
                 std::vector<int> d = curr;
@@ -308,12 +220,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(dC);
             } else if (b == size - 1) {    //check if blank is top-right
                 //valids are left, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(global_size- 1), leftPoint->at(global_size- 2));
-//            std::swap(downPoint->at(global_size- 1), downPoint->at(global_size- 1+ global_size));
                 std::vector<int> l = curr;
                 std::swap(l.at(size - 1), l.at(size - 2));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, calc_Mis(l, size));
@@ -324,16 +230,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(dC);
             } else {
                 //valids are left, right, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-
                 std::vector<int> l = curr;
                 std::swap(l.at(b), l.at(b - 1));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, calc_Mis(l, size));
@@ -347,16 +243,9 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(rC);
                 inp->add_child(dC);
             }
-        } else if ((b + size) >= global_square) {      //blank is bottom row
+        } else if ((b + size) >= global_square) {      //blank is in bottom row
             if (b == (global_square - size)) {       //blank is bottom-left
                 //valids are up, right
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -367,13 +256,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(rC);
             } else if (b == (global_square - 1)) {        //blank is bottom-right
                 //valids are up, left
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -384,16 +266,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
                 inp->add_child(lC);
             } else {
                 //valids are left, right, up
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -409,16 +281,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
             }
         } else if ((b % size) == 0) {      //blank is in first column
             //valids are up, down, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -433,16 +295,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
             inp->add_child(rC);
         } else if (((b + 1) % size) == 0) {       //blank is in last column
             //valids are up, down, left
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -457,19 +309,6 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
             inp->add_child(lC);
         } else {       //blanks is not on edge
             //valids are up, down, left, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_Mis(u, size));
@@ -491,15 +330,14 @@ void MisTileExpand(classes* inp, int size, std::vector<int> list){
 }
 
 
-int calc_MH(std::vector<int> inp, int n){
+int calc_MH(std::vector<int> inp, int n){               //calculates the Manhattan heuristic for current board state (represented by vector<int> inp
     std::vector<int> solution= makeVecOfSizeN(n);
     int totalMoves= 0;
     int rowDiff;
     int colDiff;
     int solValLoc;
     for(int i= 0; i< solution.size(); i++){
-//        if(inp.at(i)== 0){}     //we are on the blank tile of our puzzle; we skip this tile
-        if((inp.at(i)!= 0) && (inp.at(i)!= solution.at(i))){
+        if((inp.at(i)!= 0) && (inp.at(i)!= solution.at(i))){        //0 shouldn't have to be moved
             solValLoc= inp.at(i)- 1;
             rowDiff= abs(((i/ n)+ 1) - ((solValLoc/ n)+ 1));
             colDiff= abs(((i% n)+ 1) - ((solValLoc% n)+ 1));
@@ -510,8 +348,7 @@ int calc_MH(std::vector<int> inp, int n){
     return totalMoves;
 }
 
-void MHExpand(classes* inp, int size, std::vector<int> list){      //add children pointers (vector pointers) to inp
-    //expand for all possible moves
+void MHExpand(classes* inp, int size, std::vector<int> list){      //for expanding all valid moves from current board state for A* Search with Manhattan heuristic
     int global_square= size* size;        //global_square= (length)^2
     int b= findBlank(inp, size);
     std::vector<int> curr= inp->get_board();
@@ -519,12 +356,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
         if (b < size) {     //blank is in top row
             if (b == 0) {          //check if blank is in top-left
                 //valids are right, down
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(rightPoint->at(0), rightPoint->at(1));
-//            std::swap(downPoint->at(0), downPoint->at(global_size));
                 std::vector<int> r = curr;
                 std::swap(r.at(0), r.at(1));
                 std::vector<int> d = curr;
@@ -535,12 +366,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
                 inp->add_child(dC);
             } else if (b == size - 1) {    //check if blank is top-right
                 //valids are left, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(global_size- 1), leftPoint->at(global_size- 2));
-//            std::swap(downPoint->at(global_size- 1), downPoint->at(global_size- 1+ global_size));
                 std::vector<int> l = curr;
                 std::swap(l.at(size - 1), l.at(size - 2));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, calc_MH(l, size));
@@ -551,16 +376,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
                 inp->add_child(dC);
             } else {
                 //valids are left, right, down
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* downPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, leftPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, downPoint);
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-
                 std::vector<int> l = curr;
                 std::swap(l.at(b), l.at(b - 1));
                 classes *lC = new classes(l, inp, inp->get_depth() + 1, calc_MH(l, size));
@@ -574,16 +389,9 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
                 inp->add_child(rC);
                 inp->add_child(dC);
             }
-        } else if ((b + size) >= global_square) {      //blank is bottom row
+        } else if ((b + size) >= global_square) {      //blank is in bottom row
             if (b == (global_square - size)) {       //blank is bottom-left
                 //valids are up, right
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -594,13 +402,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
                 inp->add_child(rC);
             } else if (b == (global_square - 1)) {        //blank is bottom-right
                 //valids are up, left
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -611,16 +412,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
                 inp->add_child(lC);
             } else {
                 //valids are left, right, up
-//            std::vector<int>* upPoint= new std::vector<int>;
-//            std::vector<int>* rightPoint= new std::vector<int>;
-//            std::vector<int>* leftPoint= new std::vector<int>;
-//            cpyVecToPoint(curr, upPoint);
-//            cpyVecToPoint(curr, rightPoint);
-//            cpyVecToPoint(curr, leftPoint);
-//            std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//            std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-//            std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
                 std::vector<int> u = curr;
                 std::swap(u.at(b), u.at(b - size));
                 classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -636,16 +427,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
             }
         } else if ((b % size) == 0) {      //blank is in first column
             //valids are up, down, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -660,16 +441,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
             inp->add_child(rC);
         } else if (((b + 1) % size) == 0) {       //blank is in last column
             //valids are up, down, left
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -684,19 +455,6 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
             inp->add_child(lC);
         } else {       //blanks is not on edge
             //valids are up, down, left, right
-//        std::vector<int>* upPoint= new std::vector<int>;
-//        std::vector<int>* downPoint= new std::vector<int>;
-//        std::vector<int>* leftPoint= new std::vector<int>;
-//        std::vector<int>* rightPoint= new std::vector<int>;
-//        cpyVecToPoint(curr, upPoint);
-//        cpyVecToPoint(curr, downPoint);
-//        cpyVecToPoint(curr, leftPoint);
-//        cpyVecToPoint(curr, rightPoint);
-//        std::swap(upPoint->at(b), upPoint->at(b- global_size));
-//        std::swap(downPoint->at(b), downPoint->at(b+ global_size));
-//        std::swap(leftPoint->at(b), leftPoint->at(b- 1));
-//        std::swap(rightPoint->at(b), rightPoint->at(b+ 1));
-
             std::vector<int> u = curr;
             std::swap(u.at(b), u.at(b - size));
             classes *uC = new classes(u, inp, inp->get_depth() + 1, calc_MH(u, size));
@@ -719,14 +477,14 @@ void MHExpand(classes* inp, int size, std::vector<int> list){      //add childre
 
 classes* AStarMH(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, calc_MH(start, size));
-    int totalNodes= 0;
-    int maxNodes= 0;
-    std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //priority queue is a vector consisting of classes pointers
+    int totalNodes= 0;          //for total nodes expanded
+    int maxNodes= 0;            //for max queue size
+    std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //vector consisting of classes pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
-        curr= pq.top();
+        curr= pq.top();         //looking at top of pq
         pq.pop();
         if(calc_MH(curr->get_board(), size)== 0){       //we have found solution
             std::cout<< "Done with A* Manhattan heuristic!"<< std::endl<< std::endl;
@@ -737,25 +495,25 @@ classes* AStarMH(std::vector<int> start, int size, int& nodesExpanded, int& maxS
         if(pq.size()> maxNodes){
             maxNodes= pq.size();
         }
-        MHExpand(curr, size, list);       //children pointers have been added
+        MHExpand(curr, size, list);       //expand and put into queue all valid moves from current state (children)
         for(int i= 0; i< curr->get_childSize(); i++) {
             pq.push(curr->get_child(i));
             totalNodes++;
         }
     }
-    return nullptr;
+    return nullptr;         //we have no solution
 }
 
 classes* AStarMis(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, calc_Mis(start, size));
-    int totalNodes= 0;
-    int maxNodes= 0;
-    std::priority_queue<classes*, std::vector<classes*>, compare> pq;
+    int totalNodes= 0;          //for total nodes expanded
+    int maxNodes= 0;            //for max queue size
+    std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //vector consisting of classes pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
-        curr= pq.top();
+        curr= pq.top();         //looking at top of pq
         pq.pop();
         if(calc_Mis(curr->get_board(), size)== 0){
             std::cout<< "Done with A* Misplaced Tile heuristic!"<< std::endl<< std::endl;
@@ -766,25 +524,25 @@ classes* AStarMis(std::vector<int> start, int size, int& nodesExpanded, int& max
         if(pq.size()> maxNodes){
             maxNodes= pq.size();
         }
-        MisTileExpand(curr, size, list);
+        MisTileExpand(curr, size, list);            //expand and put into queue all valid moves from current state
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
             totalNodes++;
         }
     }
-    return nullptr;
+    return nullptr;         //we have no solution
 }
 
 classes* Uniform_Cost(std::vector<int> start, int size, int& nodesExpanded, int& maxSize){
     auto* curr= new classes(start, nullptr, 0, 0);
-    int totalNodes= 0;
-    int maxNodes= 0;
-    std::priority_queue<classes*, std::vector<classes*>, compare> pq;
+    int totalNodes= 0;          //for total nodes expanded
+    int maxNodes= 0;            //for max queue size
+    std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //pq is a vector consisting of 'classes' pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
     std::vector<int> list;
     while(!pq.empty()){
-        curr= pq.top();
+        curr= pq.top();         //looking at top of pq
         pq.pop();
         if(calc_Mis(curr->get_board(), size)== 0){          //only uses Misplaced Tiles as a way to check if (board== solution)
             std::cout<< "Done with Uniform Cost Search!"<< std::endl<< std::endl;
@@ -795,13 +553,13 @@ classes* Uniform_Cost(std::vector<int> start, int size, int& nodesExpanded, int&
         if(pq.size()> maxNodes){
             maxNodes= pq.size();
         }
-        UCExpand(curr, size, list);
+        UCExpand(curr, size, list);         //expand and put into queue all valid moves from current state
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
             totalNodes++;
         }
     }
-    return nullptr;
+    return nullptr;         //returns nullptr if we have no solution
 }
 
 #endif //__SEARCH_H__
