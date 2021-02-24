@@ -12,8 +12,8 @@ void display_vector(classes* inp, int size){
     }
 }
 
-void display_trace(classes* last_step, int size){
-    std::stack<classes*> list;
+void display_trace(classes* last_step, int size){           //traces from initial state down to solution, listing depth, g(n), and heuristic, h(n)
+    std::stack<classes*> list;                      //put classes pointers into a stack to "reverse" the order of "solution-> initial" into "initial-> solution"
     for(classes* ptr= last_step; ptr!= nullptr; ptr= ptr->get_parent_pointer()){
         list.push(ptr);
     }
@@ -25,7 +25,7 @@ void display_trace(classes* last_step, int size){
     std::cout<< "None! We have reached the goal state."<< std::endl;
 }
 
-void select_alg(std::vector<int> v){
+void select_alg(std::vector<int> v){            //lets user decide what algorithm to perform
     int inp;
     std::cout<< "Select the algorithm you would like to perform (1-3): \n1. Uniform Cost Search\n2. A* with Misplaced Tile heuristic\n3. A* with Manhattan Distance heuristic"<< std::endl;
     std::cin>> inp;
@@ -92,13 +92,13 @@ int main() {
         std::string length, str1, str2, str3;
         std::cout<< "Please enter the size of your puzzle (enter '3' for a 3x3 puzzle, enter '4' for a 4x4, etc.): ";
         std::cin>> length;
-        P_LENGTH= stoi(length);
+        P_LENGTH= stoi(length);         //size of puzzle changes with user input
         std::cout<< "You are entering your own puzzle. Please only enter solvable puzzles. Represent the blank with a '0'."<< std::endl;
         std::cout<< "Enter the first row as one whole number (i.e. don't separate the numbers):"<< std::endl;
         std::cin>> str1;
         std::cout<< "Enter the second row as one whole number:"<< std::endl;
         std::cin>> str2;
-        std::cout<< "Enter the third row as one whole number:"<< std::endl;     //add more options for puzzles larger than 3x3
+        std::cout<< "Enter the third row as one whole number:"<< std::endl;     //need to add more options for puzzles larger than 3x3
         std::cin>> str3;
         std::string ret= str1+str2+str3;
         select_alg(custom_puzzle(ret, P_LENGTH));
