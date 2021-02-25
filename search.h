@@ -479,6 +479,7 @@ classes* AStarMH(std::vector<int> start, int size, int& nodesExpanded, int& maxS
     auto* curr= new classes(start, nullptr, 0, calc_MH(start, size));
     int totalNodes= 0;          //for total nodes expanded
     int maxNodes= 0;            //for max queue size
+    bool incNodeCount= false;       //boolean flag, lets us know if nodesExpanded should be incremented
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //vector consisting of classes pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
@@ -496,10 +497,16 @@ classes* AStarMH(std::vector<int> start, int size, int& nodesExpanded, int& maxS
             maxNodes= pq.size();
         }
         MHExpand(curr, size, list);       //expand and put into queue all valid moves from current state (children)
+        if(curr->get_childSize()> 0){       //curr has not been seen before, and thus has children (is EXPANDED)
+            incNodeCount= true;
+        }
         for(int i= 0; i< curr->get_childSize(); i++) {
             pq.push(curr->get_child(i));
+        }
+        if(incNodeCount){           //curr has children, so curr has been EXPANDED
             totalNodes++;
         }
+        incNodeCount= false;        //resetting flag to default of 'false'
     }
     return nullptr;         //we have no solution
 }
@@ -508,6 +515,7 @@ classes* AStarMis(std::vector<int> start, int size, int& nodesExpanded, int& max
     auto* curr= new classes(start, nullptr, 0, calc_Mis(start, size));
     int totalNodes= 0;          //for total nodes expanded
     int maxNodes= 0;            //for max queue size
+    bool incNodeCount= false;       //boolean flag
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //vector consisting of classes pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
@@ -525,10 +533,16 @@ classes* AStarMis(std::vector<int> start, int size, int& nodesExpanded, int& max
             maxNodes= pq.size();
         }
         MisTileExpand(curr, size, list);            //expand and put into queue all valid moves from current state
+        if(curr->get_childSize()> 0){           //curr is unique, and has children
+            incNodeCount= true;
+        }
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
+        }
+        if(incNodeCount){           //curr has children, so curr has been EXPANDED
             totalNodes++;
         }
+        incNodeCount= false;        //reset flag to default 'false'
     }
     return nullptr;         //we have no solution
 }
@@ -537,6 +551,7 @@ classes* Uniform_Cost(std::vector<int> start, int size, int& nodesExpanded, int&
     auto* curr= new classes(start, nullptr, 0, 0);
     int totalNodes= 0;          //for total nodes expanded
     int maxNodes= 0;            //for max queue size
+    bool incNodeCount= false;       //boolean flag
     std::priority_queue<classes*, std::vector<classes*>, compare> pq;       //pq is a vector consisting of 'classes' pointers, sorted by comparing f(n)= (depth)+ (weight)
     pq.push(curr);
     maxNodes++;
@@ -554,10 +569,16 @@ classes* Uniform_Cost(std::vector<int> start, int size, int& nodesExpanded, int&
             maxNodes= pq.size();
         }
         UCExpand(curr, size, list);         //expand and put into queue all valid moves from current state
+        if(curr->get_childSize()> 0){       //curr is unique, and has children, so we need to increase totalNodes
+            incNodeCount= true;
+        }
         for(int i= 0; i< curr->get_childSize(); i++){
             pq.push(curr->get_child(i));
+        }
+        if(incNodeCount){           //curr has children, so curr has been EXPANDED
             totalNodes++;
         }
+        incNodeCount= false;        //reset flag to 'false'
     }
     return nullptr;         //returns nullptr if we have no solution
 }
